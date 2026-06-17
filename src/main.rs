@@ -24,8 +24,7 @@ fn list(todos:&[Todo]){
 fn delete(todo:&mut Vec<Todo>,
           id:u32)
     {
-    let new_id=id;
-    let pos=todo.iter().position(|t|t.id==new_id);
+    let pos=todo.iter().position(|t|t.id==id);
     if let Some(idx)=pos{
         todo.remove(idx);
         println!("已删除id=2的任务");
@@ -37,8 +36,7 @@ fn delete(todo:&mut Vec<Todo>,
 fn done(todo:&mut Vec<Todo>,
         id:u32)
     {
-    let new_id=id;
-    let result=todo.iter_mut().find(|t|t.id==new_id);
+    let result=todo.iter_mut().find(|t|t.id==id);
     match result{
         Some(i)=>{
             println!("找到任务");
@@ -56,8 +54,7 @@ fn edit(todo:&mut Vec<Todo>,
         id:u32,
         new_title:String)
     {
-        let idp=id;
-        let pos=todo.iter_mut().find(|t|t.id==idp);
+        let pos=todo.iter_mut().find(|t|t.id==id);
         if let Some(todo)=pos{
             todo.title=new_title;
              println!("修改成功，id{}标题已更新", id);
@@ -66,7 +63,30 @@ fn edit(todo:&mut Vec<Todo>,
              println!("未找到id={}的任务，修改失败", id);
         }
     }
+//清空
+fn clear(todos: &mut Vec<Todo>)
+    {
+        todos.clear();
+        println!("=== 所有任务已清空 ===");
+    }
 
+//查找
+fn search(todos: &Vec<Todo>, keyword: &str) {
+    // 过滤出标题包含关键词的所有Todo
+    let result_list: Vec<&Todo> = todos.iter()
+        .filter(|todo| todo.title.contains(keyword))
+        .collect();
+
+    if result_list.is_empty() {
+        println!("未找到包含「{}」的任务", keyword);
+    } else {
+        println!("===== 关键词「{}」搜索结果 =====", keyword);
+        for todo in result_list {
+            let status = if todo.completed { "[X]已完成" } else { "[]未完成" };
+            println!("{:<5} {:<10} {}", todo.id, status, todo.title);
+        }
+    }
+   
 fn main(){
     // let todo1=Todo{
     // id:1,
@@ -109,7 +129,8 @@ fn main(){
     list(&todos);
     delete(&mut todos,2);
     list(&todos);
-    done(&mut todos,2);
-
+    done(&mut todos, 1);
+    edit(&mut todos, 3, String::from("test"));
+    list(&todos);
 }
 
