@@ -6,6 +6,12 @@ struct Todo{
 }
 //显示
 fn list(todos:&[Todo]){
+       if todos.is_empty() {
+        println!("当前没有任务");
+        return;
+    }
+    println!("{:<5} {:<12} {}", "ID", "STATUS", "TITLE");
+    println!("--------------------------------");
     for todo in todos{
         let status =if todo.completed{
             "[X]已完成"
@@ -21,22 +27,22 @@ fn list(todos:&[Todo]){
 }
 
 //删除
-fn delete(todo:&mut Vec<Todo>,
+fn delete(todos:&mut Vec<Todo>,
           id:u32)
     {
-    let pos=todo.iter().position(|t|t.id==id);
+    let pos=todos.iter().position(|t|t.id==id);
     if let Some(idx)=pos{
-        todo.remove(idx);
-        println!("已删除id=2的任务");
+        todos.remove(idx);
+        println!("已删除{}的任务",id);
     }else{
-        println!("未找到id=2的任务");
+        println!("未找到{}的任务",id);
     }
 }
 //完成
-fn done(todo:&mut Vec<Todo>,
+fn done(todos:&mut Vec<Todo>,
         id:u32)
     {
-    let result=todo.iter_mut().find(|t|t.id==id);
+    let result=todos.iter_mut().find(|t|t.id==id);
     match result{
         Some(i)=>{
             println!("找到任务");
@@ -50,11 +56,11 @@ fn done(todo:&mut Vec<Todo>,
 }
 
 //修改
-fn edit(todo:&mut Vec<Todo>,
+fn edit(todos:&mut Vec<Todo>,
         id:u32,
         new_title:String)
     {
-        let pos=todo.iter_mut().find(|t|t.id==id);
+        let pos=todos.iter_mut().find(|t|t.id==id);
         if let Some(todo)=pos{
             todo.title=new_title;
              println!("修改成功，id{}标题已更新", id);
@@ -63,15 +69,16 @@ fn edit(todo:&mut Vec<Todo>,
              println!("未找到id={}的任务，修改失败", id);
         }
     }
+
 //清空
-fn clear(todos: &mut Vec<Todo>)
-    {
-        todos.clear();
-        println!("=== 所有任务已清空 ===");
-    }
+fn clear(todos:&mut Vec<Todo>)
+{
+    todos.retain(|t|!t.completed);
+    println!("=== 已清空完成任务 ===");
+}
 
 //查找
-fn search(todos: &Vec<Todo>, keyword: &str) {
+fn search(todos: &[Todo], keyword: &str) {
     // 过滤出标题包含关键词的所有Todo
     let result_list: Vec<&Todo> = todos.iter()
         .filter(|todo| todo.title.contains(keyword))
@@ -86,6 +93,19 @@ fn search(todos: &Vec<Todo>, keyword: &str) {
             println!("{:<5} {:<10} {}", todo.id, status, todo.title);
         }
     }
+} 
+
+//添加任务
+fn add(todos:&mut Vec<Todo>,id:u32,title:String)
+{
+    let new_todo=Todo{
+        id,
+        title,
+        completed:false
+    };
+    todos.push(new_todo);
+    println!("新增任务成功，id:{}", id);
+}
    
 fn main(){
     // let todo1=Todo{
